@@ -5,6 +5,7 @@ import { useState } from 'react';
 const ApiData = () => {
   const [data, setData] = useState([]);
   const [stories, setStories] = useState([]);
+  const [txt, SetTxt] = useState('');
 
   const [selectedOption, setSelectedOption] = useState('');
   const handleOptionChange = (e) => {
@@ -42,9 +43,20 @@ const ApiData = () => {
     fn(data1);
   };
 
+  const getText = async () => {
+    const response = await fetch('/api/readfile', {
+      method: 'GET',
+    });
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const jsonData = await response.json();
+    SetTxt(jsonData);
+  };
+
   return (
     <div>
-      <div>
+      {/* <div>
         <button
           onClick={() =>
             setData1('select title from newsid ORDER BY title DESC', setData)
@@ -93,6 +105,11 @@ const ApiData = () => {
             <h3>{story.Script}</h3>
           </div>
         ))}
+      </div> */}
+
+      <div>
+        <button onClick={getText}>Get text</button>
+        {txt}
       </div>
     </div>
   );
