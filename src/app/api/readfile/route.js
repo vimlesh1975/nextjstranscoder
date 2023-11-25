@@ -1,51 +1,54 @@
 import { spawn } from 'child_process';
 var cron = require('node-cron');
+const path = 'C:/casparcg/_media/';
+const inputFilePaths = ['go1080p25.mp4', 'CG1080i50.mp4'];
 
-export async function GET(req, res) {
-  const path = 'C:/casparcg/_media/';
-  const inputFilePaths = ['go1080p25.mp4', 'CG1080i50.mp4'];
-  const msg = [];
+function transcodeFile(file) {
+  return new Promise((resolve, reject) => {
+    const ffmpegCommand = spawn('C:/casparcg/mydata/ffmpeg/ffmpeg.exe', [
+      '-i',
+      path + file,
+      '-c:v',
+      'libx264',
+      '-c:a',
+      'aac',
+      '-strict',
+      'experimental',
+      '-y',
+      path + file.split('.')[0] + '_transcoded.mp4',
+    ]);
 
-  cron.schedule('* * * * *', () => {
-    console.log('running a task every minute');
+    ffmpegCommand.on('close', (code) => {
+      if (code === 0) {
+        console.log(`Transcoding ${file} completed successfully`);
+        resolve();
+      } else {
+        console.error(`Transcoding ${file} failed with exit code ${code}`);
+        reject(new Error(`Transcoding ${file} failed with exit code ${code}`));
+      }
+    });
   });
-
+}
+async function runTranscoding() {
   for (const file of inputFilePaths) {
     try {
-      const ffmpegCommand = spawn('C:/casparcg/mydata/ffmpeg/ffmpeg.exe', [
-        '-i',
-        path + file,
-        '-c:v',
-        'libx264',
-        '-c:a',
-        'aac',
-        '-strict',
-        'experimental',
-        '-y',
-        path + file.split('.')[0] + '_transcoded.mp4',
-      ]);
-
-      const aa = await new Promise((resolve, reject) => {
-        ffmpegCommand.on('close', (code) => {
-          if (code === 0) {
-            msg.push(file);
-            resolve(file + ' Transcoded');
-          } else {
-            const errorMessage = 'Transcoding failed with exit code ' + code;
-            reject(new Error(errorMessage));
-          }
-        });
-      });
-
-      // Log the result for each file
-      console.log(aa);
+      console.log(`Starting transcoding of ${file}`);
+      await transcodeFile(file);
+      console.log(`Transcoding of ${file} finished`);
     } catch (error) {
-      // Log the error for each file
-      console.error(error.message || 'An error occurred during transcoding');
+      console.error(
+        error.message || `An error occurred during transcoding of ${file}`
+      );
     }
   }
-
+}
+export async function GET(req, res) {
+  // Schedule the transcoding function to run every minute
+  cron.schedule('* * * * *', () => {
+    console.log('Running transcoding...');
+    runTranscoding();
+  });
   // Send a single response after all files are processed
-  const response = new Response(JSON.stringify(msg + ' files processed'));
+  const response = new Response(JSON.stringify(' files processed'));
   return response;
 }
