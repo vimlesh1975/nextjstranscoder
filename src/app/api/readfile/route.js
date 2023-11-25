@@ -1,44 +1,51 @@
-// pages/api/readfile.js
-
-import fs from 'fs';
 import { spawn } from 'child_process';
-export function GET(req, res) {
-  // try {
-  //   const data = fs.readFileSync('E:/__00vimlesh/aa.txt', 'utf-8');
-  //   // res.json(data);
-  //   return new Response(JSON.stringify(data));
-  // } catch (error) {
-  //   return new Response(JSON.stringify('Failed to read the file.'));
-  // }
-  const inputFilePath = 'C:/casparcg/_media/go1080p25.mp4';
-  const outputFilePath = 'C:/casparcg/_media/output.mp4';
+var cron = require('node-cron');
 
-  try {
-    const ffmpegCommand = spawn('C:/casparcg/mydata/ffmpeg/ffmpeg.exe', [
-      '-i',
-      inputFilePath,
-      '-c:v',
-      'libx264',
-      '-c:a',
-      'aac',
-      '-strict',
-      'experimental',
-      '-y',
-      outputFilePath,
-    ]);
+export async function GET(req, res) {
+  const path = 'C:/casparcg/_media/';
+  const inputFilePaths = ['go1080p25.mp4', 'CG1080i50.mp4'];
+  const msg = [];
 
-    ffmpegCommand.on('close', (code) => {
-      if (code === 0) {
-        const response = new Response(
-          JSON.stringify('Transcoding completed successfully')
-        );
-        return response;
-      } else {
-        const response = new Response(JSON.stringify('Transcoding failed'));
-        return response;
-      }
-    });
-  } catch (error) {
-    return new Response(JSON.stringify('Failed to read the file.'));
+  cron.schedule('* * * * *', () => {
+    console.log('running a task every minute');
+  });
+
+  for (const file of inputFilePaths) {
+    try {
+      const ffmpegCommand = spawn('C:/casparcg/mydata/ffmpeg/ffmpeg.exe', [
+        '-i',
+        path + file,
+        '-c:v',
+        'libx264',
+        '-c:a',
+        'aac',
+        '-strict',
+        'experimental',
+        '-y',
+        path + file.split('.')[0] + '_transcoded.mp4',
+      ]);
+
+      const aa = await new Promise((resolve, reject) => {
+        ffmpegCommand.on('close', (code) => {
+          if (code === 0) {
+            msg.push(file);
+            resolve(file + ' Transcoded');
+          } else {
+            const errorMessage = 'Transcoding failed with exit code ' + code;
+            reject(new Error(errorMessage));
+          }
+        });
+      });
+
+      // Log the result for each file
+      console.log(aa);
+    } catch (error) {
+      // Log the error for each file
+      console.error(error.message || 'An error occurred during transcoding');
+    }
   }
+
+  // Send a single response after all files are processed
+  const response = new Response(JSON.stringify(msg + ' files processed'));
+  return response;
 }

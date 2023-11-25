@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const ApiData = () => {
   const [data, setData] = useState([]);
@@ -27,14 +27,14 @@ const ApiData = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        // throw new Error('Network response was not ok');
       }
 
       const jsonData = await response.json();
       return jsonData; // Return the JSON data as a resolved promise
     } catch (error) {
       console.error('Error fetching data:', error);
-      throw error; // Re-throw the error for further handling
+      // throw error; // Re-throw the error for further handling
     }
   };
 
@@ -44,69 +44,24 @@ const ApiData = () => {
   };
 
   const getText = async () => {
+    SetTxt('Transcoding');
     const response = await fetch('/api/readfile', {
       method: 'GET',
     });
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      // throw new Error('Network response was not ok');
+      console.log(new Error('Network response was not ok'));
     }
     const jsonData = await response.json();
     SetTxt(jsonData);
   };
 
+  useEffect(() => {
+    // getText();
+  }, []);
+
   return (
     <div>
-      {/* <div>
-        <button
-          onClick={() =>
-            setData1('select title from newsid ORDER BY title DESC', setData)
-          }
-        >
-          Get Run Orders
-        </button>
-        <div>
-          {data.length > 0 && (
-            <label htmlFor="comboBox">Select Run Order: </label>
-          )}
-          <select
-            id="comboBox"
-            value={selectedOption}
-            onChange={handleOptionChange}
-          >
-            <option value="">Select Run Order</option>
-            {data?.map((option, index) => (
-              <option key={index} value={option.title}>
-                {option.title}
-              </option>
-            ))}
-          </select>
-          {selectedOption && (
-            <h1 style={{ backgroundColor: 'purple', color: 'white' }}>
-              Selected Run Order: {selectedOption}
-            </h1>
-          )}
-        </div>
-        <button
-          onClick={() =>
-            setData1(
-              `SELECT   script.SlugName, script.Script from script JOIN runorder on script.ScriptID = runorder.ScriptID WHERE runorder.NewsID = '${selectedOption}' and script.newsid = '${selectedOption}'  ORDER by runorder.RunOrder`,
-              setStories
-            )
-          }
-        >
-          Get Stories
-        </button>
-      </div>
-
-      <div>
-        {stories.map((story, i) => (
-          <div key={i}>
-            <h2 style={{ backgroundColor: 'yellow' }}>{story.SlugName}</h2>
-            <h3>{story.Script}</h3>
-          </div>
-        ))}
-      </div> */}
-
       <div>
         <button onClick={getText}>Get text</button>
         {txt}
