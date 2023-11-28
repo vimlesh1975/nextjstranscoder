@@ -1,7 +1,9 @@
 import { spawn } from 'child_process';
+import excuteQuery from '../db';
+
 var cron = require('node-cron');
 const path = 'C:/casparcg/_media/';
-const inputFilePaths = ['go1080p25.mp4', 'CG1080i50.mp4'];
+var inputFilePaths = [];
 
 function transcodeFile(file) {
   return new Promise((resolve, reject) => {
@@ -15,12 +17,13 @@ function transcodeFile(file) {
       '-strict',
       'experimental',
       '-y',
-      path + file.split('.')[0] + '_transcoded.mp4',
+      path + 'proxy1/' + file.split('.')[0] + '_proxy1.mp4',
     ]);
 
     ffmpegCommand.on('close', (code) => {
       if (code === 0) {
-        console.log(`Transcoding ${file} completed successfully`);
+        console.log(`completed ${file} `);
+        console.log(`----------------------------`);
         resolve();
       } else {
         console.error(`Transcoding ${file} failed with exit code ${code}`);
@@ -29,26 +32,38 @@ function transcodeFile(file) {
     });
   });
 }
+
 async function runTranscoding() {
   for (const file of inputFilePaths) {
     try {
-      console.log(`Starting transcoding of ${file}`);
+      console.log(`Starting ${file}`);
       await transcodeFile(file);
-      console.log(`Transcoding of ${file} finished`);
     } catch (error) {
       console.error(
         error.message || `An error occurred during transcoding of ${file}`
       );
     }
   }
+  inputFilePaths = [];
 }
-export async function GET(req, res) {
-  // Schedule the transcoding function to run every minute
-  cron.schedule('* * * * *', () => {
-    console.log('Running transcoding...');
+
+const queryandtranscode = async () => {
+  if (inputFilePaths.length === 0) {
+    const aa = await excuteQuery({
+      query:
+        "SELECT * FROM  media where  (FilenameProxy1 is  NULL or FilenameProxy1='') and proxyready=0  and MOD(SUBSTR(EventID,21,2),2)  =1 and  UploadStatus=1 and MediaType='Video'",
+    });
+    aa.forEach((element) => {
+      inputFilePaths.push(element.FILENAMEASUPLOADED);
+    });
     runTranscoding();
-  });
-  // Send a single response after all files are processed
-  const response = new Response(JSON.stringify(' files processed'));
+  }
+};
+
+const dd = cron.schedule('* * * * *', () => queryandtranscode());
+
+export async function GET(req, res) {
+  queryandtranscode();
+  const response = new Response(JSON.stringify('Transcoding'));
   return response;
 }
