@@ -3,53 +3,14 @@
 import { useEffect, useState } from 'react';
 
 const ApiData = () => {
-  const [data, setData] = useState([]);
-  const [stories, setStories] = useState([]);
   const [txt, SetTxt] = useState('');
 
-  const [selectedOption, setSelectedOption] = useState('');
-  const handleOptionChange = (e) => {
-    setSelectedOption(e.target.value);
-  };
-
-  const postQuery = async (str) => {
-    try {
-      const postData = {
-        query: str,
-      };
-
-      const response = await fetch('/api', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData),
-      });
-
-      if (!response.ok) {
-        // throw new Error('Network response was not ok');
-      }
-
-      const jsonData = await response.json();
-      return jsonData; // Return the JSON data as a resolved promise
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      // throw error; // Re-throw the error for further handling
-    }
-  };
-
-  const setData1 = async (str, fn) => {
-    const data1 = await postQuery(str);
-    fn(data1);
-  };
-
-  const getText = async () => {
+  const startTranscoding = async () => {
     SetTxt('Transcoding');
-    const response = await fetch('/api/readfile', {
+    const response = await fetch('/api', {
       method: 'GET',
     });
     if (!response.ok) {
-      // throw new Error('Network response was not ok');
       console.log(new Error('Network response was not ok'));
     }
     const jsonData = await response.json();
@@ -57,13 +18,13 @@ const ApiData = () => {
   };
 
   useEffect(() => {
-    // getText();
+    // startTranscoding();
   }, []);
 
   return (
     <div>
       <div>
-        <button onClick={getText}>Get text</button>
+        <button onClick={startTranscoding}>Start Transcoding</button>
         {txt}
       </div>
     </div>
