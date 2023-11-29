@@ -1,5 +1,6 @@
 import { spawn } from 'child_process';
 import excuteQuery from './db';
+import { uploadToS3 } from './uploadToS3';
 
 var cron = require('node-cron');
 const path = process.env.path1;
@@ -70,6 +71,7 @@ const queryAndMakeProxy = async () => {
 const dd = cron.schedule('* * * * *', () => queryAndMakeProxy());
 
 export async function GET(req, res) {
+  await uploadToS3('key1', 'C:/casparcg/_media/CG1080i50.mp4');
   queryAndMakeProxy();
   const response = new Response(JSON.stringify('Proxy Transcoding Started'));
   return response;
