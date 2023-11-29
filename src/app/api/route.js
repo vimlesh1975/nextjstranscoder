@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import excuteQuery from './db';
 import { uploadToS3 } from './uploadToS3';
+import fs from 'fs';
 
 var cron = require('node-cron');
 const path = process.env.path1;
@@ -8,6 +9,20 @@ const proxypath = process.env.proxypath1;
 const ffmpegpath = process.env.ffmpegpath1;
 
 var videoFiles = [];
+
+const deleteAFile = (filePath) => {
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error('Error deleting file:', err);
+    } else {
+      console.log(filePath + ' deleted successfully');
+    }
+  });
+};
+
+const destinationProxyfile = (file) => {
+  return proxypath + file.split('.')[0] + '_proxy1.mp4';
+};
 
 function makeProxy(file) {
   return new Promise((resolve, reject) => {
@@ -21,7 +36,7 @@ function makeProxy(file) {
       '-strict',
       'experimental',
       '-y',
-      proxypath + file.split('.')[0] + '_proxy1.mp4',
+      destinationProxyfile(file),
     ]);
 
     ffmpegCommand.on('close', (code) => {
@@ -41,7 +56,7 @@ function makeProxy(file) {
   });
 }
 
-const queryMakeProxyandUploadtoS3 = async () => {
+const query_MakeProxy_UploadtoS3_Delete = async () => {
   if (videoFiles.length === 0) {
     const mediaForProxy = await excuteQuery({
       query:
@@ -60,8 +75,9 @@ const queryMakeProxyandUploadtoS3 = async () => {
         await makeProxy(file);
         await uploadToS3(
           file.split('.')[0] + '_proxy1.mp4',
-          proxypath + file.split('.')[0] + '_proxy1.mp4'
+          destinationProxyfile(file)
         );
+        deleteAFile(destinationProxyfile(file));
       } catch (error) {
         console.error(
           error.message || `An error occurred during transcoding of ${file}`
@@ -72,10 +88,12 @@ const queryMakeProxyandUploadtoS3 = async () => {
   }
 };
 
-const dd = cron.schedule('* * * * *', () => queryMakeProxyandUploadtoS3());
+const dd = cron.schedule('* * * * *', () =>
+  query_MakeProxy_UploadtoS3_Delete()
+);
 
 export async function GET(req, res) {
-  queryMakeProxyandUploadtoS3();
+  query_MakeProxy_UploadtoS3_Delete();
   const response = new Response(JSON.stringify('Proxy Transcoding Started'));
   return response;
 }
