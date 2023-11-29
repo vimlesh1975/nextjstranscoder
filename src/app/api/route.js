@@ -58,6 +58,10 @@ const queryAndMakeProxy = async () => {
           }`
         );
         await makeProxy(file);
+        await uploadToS3(
+          file.split('.')[0] + '_proxy1.mp4',
+          proxypath + file.split('.')[0] + '_proxy1.mp4'
+        );
       } catch (error) {
         console.error(
           error.message || `An error occurred during transcoding of ${file}`
@@ -71,7 +75,6 @@ const queryAndMakeProxy = async () => {
 const dd = cron.schedule('* * * * *', () => queryAndMakeProxy());
 
 export async function GET(req, res) {
-  await uploadToS3('key1', 'C:/casparcg/_media/CG1080i50.mp4');
   queryAndMakeProxy();
   const response = new Response(JSON.stringify('Proxy Transcoding Started'));
   return response;
