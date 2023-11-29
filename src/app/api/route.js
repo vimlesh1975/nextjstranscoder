@@ -41,7 +41,7 @@ function makeProxy(file) {
   });
 }
 
-const queryAndMakeProxy = async () => {
+const queryMakeProxyandUploadtoS3 = async () => {
   if (videoFiles.length === 0) {
     const mediaForProxy = await excuteQuery({
       query:
@@ -72,10 +72,10 @@ const queryAndMakeProxy = async () => {
   }
 };
 
-const dd = cron.schedule('* * * * *', () => queryAndMakeProxy());
+const dd = cron.schedule('* * * * *', () => queryMakeProxyandUploadtoS3());
 
 export async function GET(req, res) {
-  queryAndMakeProxy();
+  queryMakeProxyandUploadtoS3();
   const response = new Response(JSON.stringify('Proxy Transcoding Started'));
   return response;
 }
