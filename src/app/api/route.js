@@ -1,12 +1,14 @@
 import { spawn } from 'child_process';
 import excuteQuery from './db';
-import { uploadToS3 } from './uploadToS3';
+import { uploadToS3, getObjectUrl } from './uploadToS3';
 import fs from 'fs';
 
 var cron = require('node-cron');
-const path = process.env.path1;
 const proxypath = process.env.proxypath1;
 const ffmpegpath = process.env.ffmpegpath1;
+
+const proxy1location = process.env.proxy1location1;
+const originallocation = process.env.originallocation1;
 
 var videoFiles = [];
 
@@ -24,12 +26,13 @@ const destinationProxyfile = (file) => {
   return proxypath + file.split('.')[0] + '_proxy1.mp4';
 };
 
-function makeProxy(file, MediaID) {
+async function makeProxy(file, MediaID) {
   const outputLogStream = fs.createWriteStream(proxypath + MediaID + '.log');
+  const file1 = await getObjectUrl(originallocation + file);
   return new Promise((resolve, reject) => {
     const ffmpegCommand = spawn(ffmpegpath, [
       '-i',
-      path + file,
+      file1,
       '-c:v',
       'libx264',
       '-c:a',
@@ -103,7 +106,7 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
         );
         await makeProxy(file, MediaID);
         await uploadToS3(
-          file.split('.')[0] + '_proxy1.mp4',
+          proxy1location + file.split('.')[0] + '_proxy1.mp4',
           destinationProxyfile(file)
         );
         deleteAFile(destinationProxyfile(file));
