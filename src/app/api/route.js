@@ -15,7 +15,7 @@ const deleteAFile = (filePath) => {
     if (err) {
       console.error('Error deleting file:', err);
     } else {
-      console.log(filePath + ' deleted successfully');
+      // console.log(filePath + ' deleted successfully');
     }
   });
 };
@@ -24,7 +24,8 @@ const destinationProxyfile = (file) => {
   return proxypath + file.split('.')[0] + '_proxy1.mp4';
 };
 
-function makeProxy(file) {
+function makeProxy(file, MediaID) {
+  const outputLogStream = fs.createWriteStream(proxypath + MediaID + '.log');
   return new Promise((resolve, reject) => {
     const ffmpegCommand = spawn(ffmpegpath, [
       '-i',
@@ -51,7 +52,16 @@ function makeProxy(file) {
       destinationProxyfile(file),
     ]);
 
+    // ffmpegCommand.stdout.on('data', (data) => {
+    //   console.log(`stdout: ${data}`);
+    // });
+
+    ffmpegCommand.stderr.on('data', (data) => {
+      outputLogStream.write(data.toString());
+    });
+
     ffmpegCommand.on('close', (code) => {
+      outputLogStream.end();
       if (code === 0) {
         console.log(
           `completed ${file} at ${
@@ -79,10 +89,10 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
     });
 
     // udpadte database to proxyready='-1' so that other qury shouldnot find that
-    await excuteQuery({
-      query:
-        "update media set proxyready='-1' where ( (FilenameProxy1 is  NULL or FilenameProxy1='') or proxyready=0)   and  UploadStatus=1 and MediaType='Video'",
-    });
+    // await excuteQuery({
+    //   query:
+    //     "update media set proxyready='-1' where ( (FilenameProxy1 is  NULL or FilenameProxy1='') or proxyready=0)   and  UploadStatus=1 and MediaType='Video'",
+    // });
 
     for (const { FILENAMEASUPLOADED: file, MediaID } of mediaForProxy) {
       try {
@@ -91,7 +101,7 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
             new Date().getMinutes() + ':' + new Date().getSeconds()
           }`
         );
-        await makeProxy(file);
+        await makeProxy(file, MediaID);
         await uploadToS3(
           file.split('.')[0] + '_proxy1.mp4',
           destinationProxyfile(file)
@@ -99,9 +109,9 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
         deleteAFile(destinationProxyfile(file));
 
         // udpadte database to proxyready='1' and fill the name of proxy file
-        await excuteQuery({
-          query: `update media Set FilenameProxy1='${MediaID}_proxy1', proxyready=1 where MediaID='${MediaID}'`,
-        });
+        // await excuteQuery({
+        //   query: `update media Set FilenameProxy1='${MediaID}_proxy1', proxyready=1 where MediaID='${MediaID}'`,
+        // });
       } catch (error) {
         console.error(
           error.message || `An error occurred during transcoding of ${file}`
