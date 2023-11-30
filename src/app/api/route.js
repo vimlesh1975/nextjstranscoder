@@ -72,12 +72,19 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
   if (videoFiles.length === 0) {
     const mediaForProxy = await excuteQuery({
       query:
-        "SELECT * FROM  media where  (FilenameProxy1 is  NULL or FilenameProxy1='') and proxyready=0  and MOD(SUBSTR(EventID,21,2),2)  =1 and  UploadStatus=1 and MediaType='Video'",
+        "SELECT * FROM  media where  ((FilenameProxy1 is  NULL or FilenameProxy1='') or proxyready=0)  and  UploadStatus=1 and MediaType='Video' ORDER BY MediaUploadedTime DESC",
     });
     mediaForProxy.forEach((element) => {
       videoFiles.push(element.FILENAMEASUPLOADED);
     });
-    for (const file of videoFiles) {
+
+    // udpadte database to proxyready='-1' so that other qury shouldnot find that
+    await excuteQuery({
+      query:
+        "update media set proxyready='-1' where ( (FilenameProxy1 is  NULL or FilenameProxy1='') or proxyready=0)   and  UploadStatus=1 and MediaType='Video'",
+    });
+
+    for (const { FILENAMEASUPLOADED: file, MediaID } of mediaForProxy) {
       try {
         console.log(
           `Starting ${file} at ${
@@ -90,6 +97,11 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
           destinationProxyfile(file)
         );
         deleteAFile(destinationProxyfile(file));
+
+        // udpadte database to proxyready='1' and fill the name of proxy file
+        await excuteQuery({
+          query: `update media Set FilenameProxy1='${MediaID}_proxy1', proxyready=1 where MediaID='${MediaID}'`,
+        });
       } catch (error) {
         console.error(
           error.message || `An error occurred during transcoding of ${file}`

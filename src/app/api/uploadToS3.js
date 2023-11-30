@@ -1,10 +1,5 @@
-import {
-  //   GetObjectCommand,
-  PutObjectCommand,
-  S3Client,
-} from '@aws-sdk/client-s3';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
-// import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import fs from 'fs';
 
 const s3Client = new S3Client({
@@ -17,15 +12,6 @@ const s3Client = new S3Client({
 
 const bucket1 = process.env.bucket1;
 
-// const getObjectUrl = async (key) => {
-//   const command = new GetObjectCommand({
-//     Bucket: bucket1,
-//     Key: key,
-//   });
-//   const url = await getSignedUrl(s3Client, command);
-//   return url;
-// };
-
 export const uploadToS3 = async (fileName, fileUrl) => {
   const videoStream = fs.createReadStream(fileUrl);
   const command = new PutObjectCommand({
@@ -34,8 +20,6 @@ export const uploadToS3 = async (fileName, fileUrl) => {
     Body: videoStream,
   });
   await s3Client.send(command);
-  //   const url = await getObjectUrl(fileName);
-  //   return url;
 };
 
 // console.log(await uploadToS3('CG1080i50.mp4'));
