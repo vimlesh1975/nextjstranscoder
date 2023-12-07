@@ -45,7 +45,7 @@ const ApiData = () => {
   };
   const startDurationandSize = async () => {
     SetTxt4('');
-    const response = await fetch('/api/imagethumbnail', {
+    const response = await fetch('/api/durationandsize', {
       method: 'GET',
     });
     if (!response.ok) {
