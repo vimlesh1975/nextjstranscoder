@@ -6,7 +6,7 @@ import { deleteAFile } from '../common';
 
 var cron = require('node-cron');
 const logpath = process.env.logpath1;
-const ffmpegpath = process.env.ffmpegpath1;
+const ffprobepath = process.env.ffprobepath1;
 
 const proxy1location = process.env.proxy1location1;
 const originallocation = process.env.originallocation1;
@@ -16,38 +16,24 @@ var videoFiles = [];
 async function makeProxy(MediaID, MediaExt) {
   const file = MediaID + MediaExt;
   console.log(
-    `Starting proxy1 of ${file} at ${
+    `Starting duration and size of ${file} at ${
       new Date().getMinutes() + ':' + new Date().getSeconds()
     }`
   );
   const outputLogStream = fs.createWriteStream(
-    logpath + MediaID + '_proxy1.log'
+    logpath + MediaID + '_duartionandsize.log'
   );
   const file1 = await getObjectUrl(originallocation + file);
   return new Promise((resolve, reject) => {
-    const ffmpegCommand = spawn(ffmpegpath, [
-      '-i',
+    const ffmpegCommand = spawn(ffprobepath, [
+      '-sexagesimal',
       file1,
-      '-c:v',
-      'libx264',
-      '-c:a',
-      'aac',
-      '-ar',
-      '48k',
-      '-s',
-      '480x300',
-      '-r',
-      '25',
-      '-b:v',
-      '750k',
-      '-minrate',
-      '750k',
-      '-maxrate',
-      '750k',
-      '-strict',
-      'experimental',
-      '-y',
-      logpath + MediaID + '_proxy1.mp4',
+      '-v',
+      'error',
+      '-show_entries',
+      'format=size',
+      '-of',
+      'default=noprint_wrappers=1:nokey=1',
     ]);
 
     // ffmpegCommand.stdout.on('data', (data) => {
@@ -62,7 +48,7 @@ async function makeProxy(MediaID, MediaExt) {
       outputLogStream.end();
       if (code === 0) {
         console.log(
-          `completed proxy1 of ${file} at ${
+          `completed duratin of ${file} at ${
             new Date().getMinutes() + ':' + new Date().getSeconds()
           }`
         );
@@ -80,7 +66,7 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
   if (videoFiles.length === 0) {
     const mediaForProxy = await excuteQuery({
       query:
-        "SELECT * FROM  media where  ((FilenameProxy1 is  NULL or FilenameProxy1='') or proxyready=0)  and  UploadStatus=1 and MediaType='Video' ORDER BY MediaUploadedTime DESC",
+        "SELECT * FROM  media where (Duration is  NULL or Duration='') and UploadStatus=1 and MediaType='Video' ORDER BY MediaUploadedTime DESC",
     });
     mediaForProxy.forEach((element) => {
       videoFiles.push(element.FILENAMEASUPLOADED);
