@@ -13,8 +13,11 @@ const originallocation = process.env.originallocation1;
 
 var videoFiles = [];
 
-async function makeProxy(file, MediaID) {
-  const outputLogStream = fs.createWriteStream(logpath + MediaID + '.log');
+async function makeProxy(MediaID, MediaExt) {
+  const file = MediaID + MediaExt;
+  const outputLogStream = fs.createWriteStream(
+    logpath + MediaID + '_proxy1.log'
+  );
   const file1 = await getObjectUrl(originallocation + file);
   return new Promise((resolve, reject) => {
     const ffmpegCommand = spawn(ffmpegpath, [
@@ -84,14 +87,15 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
         "update media set proxyready='-1' where ( (FilenameProxy1 is  NULL or FilenameProxy1='') or proxyready=0)   and  UploadStatus=1 and MediaType='Video'",
     });
 
-    for (const { FILENAMEASUPLOADED: file, MediaID } of mediaForProxy) {
+    for (const { MediaID, MediaExt } of mediaForProxy) {
+      const file = MediaID + MediaExt;
       try {
         console.log(
           `Starting ${file} at ${
             new Date().getMinutes() + ':' + new Date().getSeconds()
           }`
         );
-        await makeProxy(file, MediaID);
+        await makeProxy(MediaID, MediaExt);
         await uploadToS3(
           proxy1location + MediaID + '_proxy1.mp4',
           logpath + MediaID + '_proxy1.mp4'

@@ -16,10 +16,9 @@ const originallocation = process.env.originallocation1;
 
 var videoFiles = [];
 
-async function makeThumbnail(file, MediaID) {
-  const outputLogStream = fs.createWriteStream(
-    logpath + MediaID + '_th1_image.log'
-  );
+async function makeThumbnail(MediaID, MediaExt) {
+  const file = MediaID + MediaExt;
+  const outputLogStream = fs.createWriteStream(logpath + MediaID + '_th1.log');
   const file1 = await getObjectUrl(originallocation + file);
   return new Promise((resolve, reject) => {
     const ffmpegCommand = spawn(ffmpegpath, [
@@ -43,7 +42,7 @@ async function makeThumbnail(file, MediaID) {
       outputLogStream.end();
       if (code === 0) {
         console.log(
-          `completed ${file} at ${
+          `completed thumbnail of ${file} at ${
             new Date().getMinutes() + ':' + new Date().getSeconds()
           }`
         );
@@ -56,10 +55,9 @@ async function makeThumbnail(file, MediaID) {
     });
   });
 }
-async function makeThumbnail2(file, MediaID) {
-  const outputLogStream = fs.createWriteStream(
-    logpath + MediaID + '_th2_image.log'
-  );
+async function makeThumbnail2(MediaID, MediaExt) {
+  const file = MediaID + MediaExt;
+  const outputLogStream = fs.createWriteStream(logpath + MediaID + '_th2.log');
   const file1 = await getObjectUrl(originallocation + file);
   return new Promise((resolve, reject) => {
     const ffmpegCommand = spawn(ffmpegpath, [
@@ -107,15 +105,16 @@ const query_makeThumbnail_UploadtoS3_Delete = async () => {
       videoFiles.push(element.FILENAMEASUPLOADED);
     });
 
-    for (const { FILENAMEASUPLOADED: file, MediaID } of mediaForThumbnail) {
+    for (const { MediaID, MediaExt } of mediaForThumbnail) {
+      const file = MediaID + MediaExt;
       try {
         console.log(
           `Starting thumbnail of ${file} at ${
             new Date().getMinutes() + ':' + new Date().getSeconds()
           }`
         );
-        await makeThumbnail(file, MediaID);
-        await makeThumbnail2(file, MediaID);
+        await makeThumbnail(MediaID, MediaExt);
+        await makeThumbnail2(MediaID, MediaExt);
 
         await uploadToS3(
           thumbnail1location + MediaID + '_th1.jpg',
