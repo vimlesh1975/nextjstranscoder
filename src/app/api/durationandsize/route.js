@@ -53,9 +53,9 @@ const query_getMetadata = async () => {
 
         // udpadte database to proxyready='1' and fill the name of proxy file
 
-        // await excuteQuery({
-        //   query: `update media Set Duration='${duration}', FileSize='${size}' where MediaID='${MediaID}'`,
-        // });
+        await excuteQuery({
+          query: `update media Set Duration='${duration}', FileSize='${size}' where MediaID='${MediaID}'`,
+        });
       } catch (error) {
         console.error(
           error.message || `An error occurred during transcoding of ${file}`
