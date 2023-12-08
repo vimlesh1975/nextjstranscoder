@@ -26,7 +26,6 @@ async function getMetadata(MediaID, MediaExt) {
 
 const query_getMetadata = async () => {
   if (videoFiles.length === 0) {
-    console.log('first');
     const mediaForProxy = await excuteQuery({
       query:
         "SELECT * FROM  media where (Duration is  NULL or Duration='') and UploadStatus=1 and (MediaType='Video' or MediaType='image') ORDER BY MediaUploadedTime DESC",
@@ -34,12 +33,6 @@ const query_getMetadata = async () => {
     mediaForProxy.forEach((element) => {
       videoFiles.push(element.FILENAMEASUPLOADED);
     });
-
-    // udpadte database to proxyready='-1' so that other qury shouldnot find that
-    // await excuteQuery({
-    //   query:
-    //     "update media set proxyready='-1' where ( (FilenameProxy1 is  NULL or FilenameProxy1='') or proxyready=0)   and  UploadStatus=1 and MediaType='Video'",
-    // });
 
     for (const { MediaID, MediaExt } of mediaForProxy) {
       const file = MediaID + MediaExt;
@@ -67,12 +60,11 @@ const query_getMetadata = async () => {
 };
 
 const dd = cron.schedule('* * * * *', () => {
-  console.log('nodecorn called');
   query_getMetadata();
 });
 
 export async function GET(req, res) {
   query_getMetadata();
-  const response = new Response(JSON.stringify('Proxy Transcoding Started'));
+  const response = new Response(JSON.stringify('Duration and Size Started'));
   return response;
 }

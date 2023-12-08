@@ -7,8 +7,9 @@ const ApiData = () => {
   const [txt2, SetTxt2] = useState('');
   const [txt3, SetTxt3] = useState('');
   const [txt4, SetTxt4] = useState('');
+  const [txt5, SetTxt5] = useState('');
 
-  const startTranscoding = async () => {
+  const startProxy = async () => {
     SetTxt('');
     const response = await fetch('/api/proxy', {
       method: 'GET',
@@ -55,6 +56,18 @@ const ApiData = () => {
     SetTxt4(jsonData);
   };
 
+  const startDeletingLigFiles = async () => {
+    SetTxt5('');
+    const response = await fetch('/api/deleteLogFiles', {
+      method: 'GET',
+    });
+    if (!response.ok) {
+      console.log(new Error('Network response was not ok'));
+    }
+    const jsonData = await response.json();
+    SetTxt5(jsonData);
+  };
+
   useEffect(() => {
     // startTranscoding();
   }, []);
@@ -62,22 +75,27 @@ const ApiData = () => {
   return (
     <div>
       <div>
-        <button onClick={startTranscoding}>Start Transcoding</button>
+        <button onClick={startProxy}>Start proxy</button>
         {txt}
       </div>
       <div>
-        <button onClick={startThumbnail}>Start startThumbnail</button>
+        <button onClick={startThumbnail}>Start Thumbnail</button>
         {txt2}
       </div>
       <div>
-        <button onClick={startImageThumbnail}>
-          Start Image startThumbnail
-        </button>
+        <button onClick={startImageThumbnail}>Start Image Thumbnail</button>
         {txt3}
       </div>
       <div>
-        <button onClick={startDurationandSize}>Get Duration and Size</button>
+        <button onClick={startDurationandSize}>Start Duration and Size</button>
         {txt4}
+      </div>
+
+      <div>
+        <button onClick={startDeletingLigFiles}>
+          Start Deleting log files
+        </button>
+        {txt5}
       </div>
     </div>
   );

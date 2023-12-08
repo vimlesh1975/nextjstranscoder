@@ -19,11 +19,5 @@ export function formatTime(seconds) {
   const formattedTime = `${h}:${m < 10 ? '0' : ''}${m}:${
     s < 10 ? '0' : ''
   }${s}`;
-
   return formattedTime;
 }
-
-// Example usage:
-const seconds = 3665; // Replace this with your desired number of seconds
-const formattedTime = formatTime(seconds);
-console.log(formattedTime);

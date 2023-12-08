@@ -35,6 +35,3 @@ export const uploadToS3 = async (fileName, fileUrl) => {
   });
   await s3Client.send(command);
 };
-
-// console.log(await uploadToS3('CG1080i50.mp4'));
-// console.log(await getObjectUrl('Media/original/CG1080i50.mp4'));
