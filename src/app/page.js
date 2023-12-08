@@ -77,7 +77,7 @@ const ApiData = () => {
       </div>
       <div>
         <button onClick={startDurationandSize}>Get Duration and Size</button>
-        {txt3}
+        {txt4}
       </div>
     </div>
   );
