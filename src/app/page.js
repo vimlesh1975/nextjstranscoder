@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Gallery from './Gallery';
 
 const ApiData = () => {
   const [txt, SetTxt] = useState('');
@@ -8,6 +9,7 @@ const ApiData = () => {
   const [txt3, SetTxt3] = useState('');
   const [txt4, SetTxt4] = useState('');
   const [txt5, SetTxt5] = useState('');
+
 
   const startProxy = async () => {
     SetTxt('');
@@ -72,6 +74,8 @@ const ApiData = () => {
     // startTranscoding();
   }, []);
 
+ 
+
   return (
     <div>
       <div>
@@ -96,6 +100,10 @@ const ApiData = () => {
           Start Deleting log files
         </button>
         {txt5}
+      </div>
+
+      <div>
+    <Gallery />
       </div>
     </div>
   );

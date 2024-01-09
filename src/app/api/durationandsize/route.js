@@ -6,6 +6,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import { formatTime } from '../common';
 var cron = require('node-cron');
 const originallocation = process.env.originallocation1;
+ffmpeg.setFfmpegPath(process.env.ffprobepath1);
 
 var videoFiles = [];
 
