@@ -48,9 +48,32 @@ const deleteFiles = (minutes) => {
   });
 };
 
-const dd = cron.schedule('* * * * *', () => deleteFiles(60));
+
+var started = false;
+var dd ;
+const log1 = () => {
+  console.log('log from delete files')
+}
+
+export async function POST(req, res) {
+  const jsonData = await req.json();
+  if (jsonData.start === true && started === false) {
+    // const dd = cron.schedule('* * * * *', () => deleteFiles(60));
+   dd = cron.schedule('*/5 * * * * *', () => log1());
+    log1();
+  started = true;
+  }
+  else{
+
+  started = false;
+  dd.stop();
+
+  }
+  // deleteFiles(60);
+  const response = new Response(JSON.stringify({ started: started }));
+  return response;
+}
 export async function GET(req, res) {
-  deleteFiles(60);
-  const response = new Response(JSON.stringify('file deletion Started'));
+  const response = new Response(JSON.stringify({ started: started }));
   return response;
 }

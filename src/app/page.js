@@ -58,7 +58,25 @@ const ApiData = () => {
     SetTxt4(jsonData);
   };
 
-  const startDeletingLigFiles = async () => {
+  const startDeletingLigFiles = async (val) => {
+    SetTxt5('');
+    const response = await fetch('/api/deleteLogFiles', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({start:val}),
+    });
+    if (!response.ok) {
+      console.log(new Error('Network response was not ok'));
+    }
+    const jsonData = await response.json();
+    SetTxt5(jsonData.started.toString());
+  };
+
+
+
+  const getstartDeletingLigFiles = async () => {
     SetTxt5('');
     const response = await fetch('/api/deleteLogFiles', {
       method: 'GET',
@@ -67,11 +85,11 @@ const ApiData = () => {
       console.log(new Error('Network response was not ok'));
     }
     const jsonData = await response.json();
-    SetTxt5(jsonData);
+    SetTxt5(jsonData.started.toString());
   };
 
   useEffect(() => {
-    // startTranscoding();
+    getstartDeletingLigFiles();
   }, []);
 
  
@@ -96,8 +114,11 @@ const ApiData = () => {
       </div>
 
       <div>
-        <button onClick={startDeletingLigFiles}>
+        <button onClick={()=>startDeletingLigFiles(true)}>
           Start Deleting log files
+        </button>
+        <button onClick={()=>startDeletingLigFiles(false)}>
+          Stop Deleting log files
         </button>
         {txt5}
       </div>
