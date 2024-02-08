@@ -63,8 +63,7 @@ export async function POST(req, res) {
     log1();
   started = true;
   }
-  else{
-
+  if (jsonData.start === false && started === true) {
   started = false;
   dd.stop();
 

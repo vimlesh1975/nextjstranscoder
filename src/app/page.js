@@ -8,7 +8,7 @@ const ApiData = () => {
   const [txt2, SetTxt2] = useState('');
   const [txt3, SetTxt3] = useState('');
   const [txt4, SetTxt4] = useState('');
-  const [txt5, SetTxt5] = useState('');
+  const [txt5, SetTxt5] = useState(false);
 
 
   const startProxy = async () => {
@@ -71,7 +71,7 @@ const ApiData = () => {
       console.log(new Error('Network response was not ok'));
     }
     const jsonData = await response.json();
-    SetTxt5(jsonData.started.toString());
+    SetTxt5(jsonData.started);
   };
 
 
@@ -85,7 +85,7 @@ const ApiData = () => {
       console.log(new Error('Network response was not ok'));
     }
     const jsonData = await response.json();
-    SetTxt5(jsonData.started.toString());
+    SetTxt5(jsonData.started);
   };
 
   useEffect(() => {
@@ -114,13 +114,12 @@ const ApiData = () => {
       </div>
 
       <div>
-        <button onClick={()=>startDeletingLigFiles(true)}>
-          Start Deleting log files
-        </button>
-        <button onClick={()=>startDeletingLigFiles(false)}>
+      <span style={{color:txt5?'darkgreen':'darkred', fontSize:20, fontWeight:'bolder'}}>{txt5?'Started':'Stopped'}</span>
+        {txt5? <><button onClick={()=>startDeletingLigFiles(false)}>
           Stop Deleting log files
-        </button>
-        {txt5}
+        </button></>  : <button onClick={()=>startDeletingLigFiles(true)}>
+          Start Deleting log files
+        </button>}
       </div>
 
       <div>
