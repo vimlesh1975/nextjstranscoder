@@ -151,14 +151,19 @@ const query_makeThumbnail_UploadtoS3_Delete = async () => {
   }
 };
 
+
+var started = false;
+var dd ;
+const log1 = () => {
+  console.log('log from delete files')
+}
+
+
 const dd = cron.schedule('* * * * *', () =>
   query_makeThumbnail_UploadtoS3_Delete()
 );
 
 export async function GET(req, res) {
-  query_makeThumbnail_UploadtoS3_Delete();
-  const response = new Response(
-    JSON.stringify('thumbnail Transcoding Started')
-  );
+  const response = new Response(JSON.stringify({ started: started }));
   return response;
 }

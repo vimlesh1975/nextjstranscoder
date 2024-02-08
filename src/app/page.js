@@ -35,7 +35,23 @@ const ApiData = () => {
     SetTxt2(jsonData);
   };
 
-  const startImageThumbnail = async () => {
+  const startImageThumbnail = async (val) => {
+    SetTxt3('');
+    const response = await fetch('/api/imagethumbnail', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({start:val}),
+    });
+    if (!response.ok) {
+      console.log(new Error('Network response was not ok'));
+    }
+    const jsonData = await response.json();
+    SetTxt3(jsonData.started);
+  };
+
+  const getstartImageThumbnail = async () => {
     SetTxt3('');
     const response = await fetch('/api/imagethumbnail', {
       method: 'GET',
@@ -44,8 +60,9 @@ const ApiData = () => {
       console.log(new Error('Network response was not ok'));
     }
     const jsonData = await response.json();
-    SetTxt3(jsonData);
+    SetTxt3(jsonData.started);
   };
+
 
 
   const startDurationandSize = async (val) => {
@@ -109,6 +126,7 @@ const ApiData = () => {
   useEffect(() => {
     getstartDeletingLigFiles();
     getstartDurationandSize();
+    getstartImageThumbnail();
   }, []);
 
  
@@ -124,13 +142,19 @@ const ApiData = () => {
         {txt2}
       </div>
       <div>
-        <button onClick={startImageThumbnail}>Start Image Thumbnail</button>
-        {txt3}
+        {/* <button onClick={startImageThumbnail}>Start Image Thumbnail</button>
+        {txt3} */}
+
+        <span style={{color:txt3?'darkgreen':'darkred', fontSize:20, fontWeight:'bolder'}}>{txt3?'Started':'Stopped'}</span>
+        {txt3? <><button onClick={()=>startImageThumbnail(false)}>
+          Stop Image Thumbnail
+        </button></>  : <button onClick={()=>startImageThumbnail(true)}>
+          Start Image Thumbnail
+        </button>}
+
+
       </div>
       <div>
-        {/* <button onClick={startDurationandSize}>Start Duration and Size</button>
-        {txt4} */}
-
         <span style={{color:txt4?'darkgreen':'darkred', fontSize:20, fontWeight:'bolder'}}>{txt4?'Started':'Stopped'}</span>
         {txt4? <><button onClick={()=>startDurationandSize(false)}>
           Stop Duration and Size
