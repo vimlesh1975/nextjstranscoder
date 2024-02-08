@@ -7,7 +7,7 @@ const ApiData = () => {
   const [txt, SetTxt] = useState('');
   const [txt2, SetTxt2] = useState('');
   const [txt3, SetTxt3] = useState('');
-  const [txt4, SetTxt4] = useState('');
+  const [txt4, SetTxt4] = useState(false);
   const [txt5, SetTxt5] = useState(false);
 
 
@@ -46,7 +46,25 @@ const ApiData = () => {
     const jsonData = await response.json();
     SetTxt3(jsonData);
   };
-  const startDurationandSize = async () => {
+
+
+  const startDurationandSize = async (val) => {
+    SetTxt4('');
+    const response = await fetch('/api/durationandsize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({start:val}),
+    });
+    if (!response.ok) {
+      console.log(new Error('Network response was not ok'));
+    }
+    const jsonData = await response.json();
+    SetTxt4(jsonData.started);
+  };
+
+  const getstartDurationandSize = async () => {
     SetTxt4('');
     const response = await fetch('/api/durationandsize', {
       method: 'GET',
@@ -55,7 +73,7 @@ const ApiData = () => {
       console.log(new Error('Network response was not ok'));
     }
     const jsonData = await response.json();
-    SetTxt4(jsonData);
+    SetTxt4(jsonData.started);
   };
 
   const startDeletingLigFiles = async (val) => {
@@ -90,6 +108,7 @@ const ApiData = () => {
 
   useEffect(() => {
     getstartDeletingLigFiles();
+    getstartDurationandSize();
   }, []);
 
  
@@ -109,8 +128,16 @@ const ApiData = () => {
         {txt3}
       </div>
       <div>
-        <button onClick={startDurationandSize}>Start Duration and Size</button>
-        {txt4}
+        {/* <button onClick={startDurationandSize}>Start Duration and Size</button>
+        {txt4} */}
+
+        <span style={{color:txt4?'darkgreen':'darkred', fontSize:20, fontWeight:'bolder'}}>{txt4?'Started':'Stopped'}</span>
+        {txt4? <><button onClick={()=>startDurationandSize(false)}>
+          Stop Duration and Size
+        </button></>  : <button onClick={()=>startDurationandSize(true)}>
+          Start Duration and Size
+        </button>}
+
       </div>
 
       <div>

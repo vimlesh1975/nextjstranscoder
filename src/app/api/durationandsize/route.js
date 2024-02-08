@@ -60,12 +60,36 @@ const query_getMetadata = async () => {
   }
 };
 
-const dd = cron.schedule('* * * * *', () => {
-  query_getMetadata();
-});
+var started = false;
+var dd ;
+const log1 = () => {
+  console.log('log from duration files')
+}
+
+
+
+
+export async function POST(req, res) {
+  const jsonData = await req.json();
+  if (jsonData.start === true && started === false) {
+    // const dd = cron.schedule('* * * * *', () => {
+    //   query_getMetadata();
+    // });
+   dd = cron.schedule('*/5 * * * * *', () => log1());
+    log1();
+  started = true;
+  }
+  if (jsonData.start === false && started === true) {
+  started = false;
+  dd.stop();
+
+  }
+  // deleteFiles(60);
+  const response = new Response(JSON.stringify({ started: started }));
+  return response;
+}
 
 export async function GET(req, res) {
-  query_getMetadata();
-  const response = new Response(JSON.stringify('Duration and Size Started'));
+  const response = new Response(JSON.stringify({ started: started }));
   return response;
 }
