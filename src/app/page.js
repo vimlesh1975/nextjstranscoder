@@ -284,6 +284,7 @@ const ApiData = () => {
                   <button onClick={() => startDeletingLigFiles(true)}>Start</button>
                 )}
               </td>
+              <td><button onClick={() => startDeletingLigFiles(`now`)}>Test</button></td>
             </tr>
           </tbody>
         </table>
