@@ -86,7 +86,6 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
       videoFiles.push(element.FILENAMEASUPLOADED);
     });
 
-    // udpadte database to proxyready='-1' so that other qury shouldnot find that
     await excuteQuery({
       query:
         "update media set proxyready='-1' where  proxyready=0  and  UploadStatus=1 and MediaType='Video'",

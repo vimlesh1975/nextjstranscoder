@@ -137,7 +137,6 @@ const query_makeThumbnail_UploadtoS3_Delete = async () => {
         deleteAFile(logpath + MediaID + '_th1.jpg');
         deleteAFile(logpath + MediaID + '_th2.jpg');
 
-        // udpadte database to proxyready='1' and fill the name of proxy file
         await excuteQuery({
           query: `update media Set ThumbnailBig='${MediaID}_th1', ThumbnailSmall='${MediaID}_th2' where MediaID='${MediaID}'`,
         });
@@ -174,7 +173,6 @@ export async function POST(req, res) {
   dd.stop();
 
   }
-  // deleteFiles(60);
   const response = new Response(JSON.stringify({ started: started }));
   return response;
 }

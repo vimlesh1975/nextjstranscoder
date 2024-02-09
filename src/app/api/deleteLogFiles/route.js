@@ -68,7 +68,6 @@ export async function POST(req, res) {
   dd.stop();
 
   }
-  // deleteFiles(60);
   const response = new Response(JSON.stringify({ started: started }));
   return response;
 }
