@@ -58,9 +58,9 @@ const log1 = () => {
 export async function POST(req, res) {
   const jsonData = await req.json();
   if (jsonData.start === true && started === false) {
-    // const dd = cron.schedule('* * * * *', () => deleteFiles(60));
-   dd = cron.schedule('*/5 * * * * *', () => log1());
-    log1();
+     dd = cron.schedule('* * * * *', () => deleteFiles(60));
+  //  dd = cron.schedule('*/5 * * * * *', () => log1());
+  //   log1();
   started = true;
   }
   if (jsonData.start === false && started === true) {

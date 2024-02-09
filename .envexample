@@ -1,19 +1,20 @@
-    host1= 
-    port1=
-    database1= 
-    user1= 
-    password1= 
+    host1= localhost
+    port1= 3306
+    database1= ndmstest
+    user1= root
+    password1= root
 
-    logPath1=
-    ffmpegpath1=
-    ffprobepath1=
+    logPath1=c:/casparcg/_media/log/
+    ffmpegpath1=C:/casparcg/mydata/ffmpeg/ffmpeg.exe
+    ffprobepath1=C:/casparcg/mydata/ffmpeg/ffprobe.exe
 
     region1=
     accessKeyId1=
     secretAccessKey1=
     bucket1=
-    proxy1location1=
-    originallocation1=
-    thumbnail1location1=
-    thumbnail2location1=
+    proxy1location1=Media/Proxy1/
+    originallocation1=Media/original/
+    thumbnail1location1=Media/TH1/
+    thumbnail2location1=Media/TH2/
 
+    

@@ -146,14 +146,34 @@ const query_makeThumbnail_UploadtoS3_Delete = async () => {
   }
 };
 
-const dd = cron.schedule('* * * * *', () =>
-  query_makeThumbnail_UploadtoS3_Delete()
-);
+var started = false;
+var dd ;
+const log1 = () => {
+  console.log('log from thumbnail ')
+}
+
+export async function POST(req, res) {
+  const jsonData = await req.json();
+  if (jsonData.start === true && started === false) {
+    query_makeThumbnail_UploadtoS3_Delete();
+    dd = cron.schedule('* * * * *', () =>
+    query_makeThumbnail_UploadtoS3_Delete()
+  );
+  //  dd = cron.schedule('*/5 * * * * *', () => log1());
+  //   log1();
+  started = true;
+  }
+  if (jsonData.start === false && started === true) {
+  started = false;
+  dd.stop();
+
+  }
+  // deleteFiles(60);
+  const response = new Response(JSON.stringify({ started: started }));
+  return response;
+}
 
 export async function GET(req, res) {
-  query_makeThumbnail_UploadtoS3_Delete();
-  const response = new Response(
-    JSON.stringify('thumbnail Transcoding Started')
-  );
+  const response = new Response(JSON.stringify({ started: started }));
   return response;
 }

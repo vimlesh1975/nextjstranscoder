@@ -80,7 +80,7 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
   if (videoFiles.length === 0) {
     const mediaForProxy = await excuteQuery({
       query:
-        "SELECT * FROM  media where  ((FilenameProxy1 is  NULL or FilenameProxy1='') or proxyready=0)  and  UploadStatus=1 and MediaType='Video' ORDER BY MediaUploadedTime DESC",
+        "SELECT * FROM  media where  proxyready=0  and  UploadStatus=1 and MediaType='Video' ORDER BY MediaUploadedTime DESC",
     });
     mediaForProxy.forEach((element) => {
       videoFiles.push(element.FILENAMEASUPLOADED);
@@ -89,7 +89,7 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
     // udpadte database to proxyready='-1' so that other qury shouldnot find that
     await excuteQuery({
       query:
-        "update media set proxyready='-1' where ( (FilenameProxy1 is  NULL or FilenameProxy1='') or proxyready=0)   and  UploadStatus=1 and MediaType='Video'",
+        "update media set proxyready='-1' where  proxyready=0  and  UploadStatus=1 and MediaType='Video'",
     });
 
     for (const { MediaID, MediaExt } of mediaForProxy) {
@@ -116,12 +116,35 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
   }
 };
 
-const dd = cron.schedule('* * * * *', () =>
-  query_MakeProxy_UploadtoS3_Delete()
-);
+var started = false;
+var dd ;
+const log1 = () => {
+  console.log('log from proxy ')
+}
+
+export async function POST(req, res) {
+  const jsonData = await req.json();
+  if (jsonData.start === true && started === false) {
+    query_MakeProxy_UploadtoS3_Delete();
+     dd = cron.schedule('* * * * *', () =>
+    query_MakeProxy_UploadtoS3_Delete()
+  );
+  
+  //  dd = cron.schedule('*/5 * * * * *', () => log1());
+  //   log1();
+  started = true;
+  }
+  if (jsonData.start === false && started === true) {
+  started = false;
+  dd.stop();
+
+  }
+  const response = new Response(JSON.stringify({ started: started }));
+  return response;
+}
+
 
 export async function GET(req, res) {
-  query_MakeProxy_UploadtoS3_Delete();
-  const response = new Response(JSON.stringify('Proxy Transcoding Started'));
+  const response = new Response(JSON.stringify({ started: started }));
   return response;
 }
