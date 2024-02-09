@@ -68,6 +68,9 @@ export async function POST(req, res) {
   dd.stop();
 
   }
+  if(jsonData.start==='now' ){
+    deleteFiles(0.001);
+  }
   const response = new Response(JSON.stringify({ started: started }));
   return response;
 }
