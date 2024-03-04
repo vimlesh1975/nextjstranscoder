@@ -12,23 +12,36 @@ const Gallery = () => {
 
 
   const getMedia = async () => {
-    const response = await fetch('/api/getmedia', {
-      method: 'GET',
-    });
-    if (!response.ok) {
-      console.log(new Error('Network response was not ok'));
+    try {
+      const response = await fetch('/api/getmedia', {
+        method: 'GET',
+      });
+      if (!response.ok) {
+        console.log(new Error('Network response was not ok'));
+      }
+      const jsonData = await response.json();
+      console.log(jsonData)
+      setMedia(jsonData);
+    } catch (error) {
+      console.log(error)
+      
     }
-    const jsonData = await response.json();
-    console.log(jsonData)
-    setMedia(jsonData);
+   
   }
 
   useEffect(() => {
     getMedia()
   }, []);
 
+  const refreshMedia=()=>{
+    getMedia();
+  }
+
   return (
     <div>
+      <div style={{textAlign:'left', margin:10}}> 
+      <button onClick={refreshMedia}>Refresh Media</button>
+      </div>
       {(media?.urls)?.map((element, i) => (
         <div key={i} style={{display:'flex'}}>
           <div  style={{width:370, height:250, border:'2px solid red', margin:10}}>
