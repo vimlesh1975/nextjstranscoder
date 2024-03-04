@@ -18,7 +18,9 @@ const deleteFiles = (minutes) => {
     }
 
     // Iterate over the files
-    files.forEach((file) => {
+    files
+    .filter((file) => path.extname(file) === '.log')
+    .forEach((file) => {
       const filePath = path.join(logpath, file);
 
       // Get file stats (including the last modification time)
