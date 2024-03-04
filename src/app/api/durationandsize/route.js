@@ -25,14 +25,21 @@ async function getMetadata(MediaID, MediaExt) {
   });
 }
 
+const whereClause=" where (Duration is  NULL or Duration='') and UploadStatus=1 and (MediaType='Video' or MediaType='image') ORDER BY MediaUploadedTime DESC";
+
 const query_getMetadata = async () => {
   if (videoFiles.length === 0) {
     const mediaForProxy = await excuteQuery({
       query:
-        "SELECT * FROM  media where (Duration is  NULL or Duration='') and UploadStatus=1 and (MediaType='Video' or MediaType='image') ORDER BY MediaUploadedTime DESC",
+        "SELECT * FROM  media " + whereClause
     });
     mediaForProxy.forEach((element) => {
       videoFiles.push(element.FILENAMEASUPLOADED);
+    });
+
+    await excuteQuery({
+      query:
+      "update media Set Duration='-1', FileSize='-1' " + whereClause
     });
 
     for (const { MediaID, MediaExt } of mediaForProxy) {

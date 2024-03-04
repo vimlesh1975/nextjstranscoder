@@ -75,12 +75,13 @@ async function makeProxy(MediaID, MediaExt) {
     });
   });
 }
+const whereClause=" where  proxyready=0  and  UploadStatus=1 and MediaType='Video' ORDER BY MediaUploadedTime DESC"
 
 const query_MakeProxy_UploadtoS3_Delete = async () => {
   if (videoFiles.length === 0) {
     const mediaForProxy = await excuteQuery({
       query:
-        "SELECT * FROM  media where  proxyready=0  and  UploadStatus=1 and MediaType='Video' ORDER BY MediaUploadedTime DESC",
+        "SELECT * FROM  media " + whereClause,
     });
     mediaForProxy.forEach((element) => {
       videoFiles.push(element.FILENAMEASUPLOADED);
@@ -88,7 +89,7 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
 
     await excuteQuery({
       query:
-        "update media set proxyready='-1' where  proxyready=0  and  UploadStatus=1 and MediaType='Video'",
+        "update media set proxyready='-1' " + whereClause,
     });
 
     for (const { MediaID, MediaExt } of mediaForProxy) {

@@ -43,7 +43,7 @@ const Gallery = () => {
             {(media.media[i].MediaType).toUpperCase() === 'VIDEO' ? (
               <video src={media.videoUrls[i]} width={width} height={height} controls />
             ) : (
-              <Image src={element} alt='' width={width} height={height} style={{ border: '2px solid black' }} />
+              <Image priority={false} src={element} alt='' width={width} height={height} style={{ border: '2px solid black' }} />
             )}
             <div>
               size: {(media.media[i].FileSize / 1000000).toFixed(1)}MB Duration: {media.media[i].Duration}

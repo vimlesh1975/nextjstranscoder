@@ -104,15 +104,21 @@ async function makeThumbnail2(MediaID, MediaExt) {
     });
   });
 }
+const whereClause=" where  (ThumbnailBig is  NULL or ThumbnailBig='') and UploadStatus=1 and MediaType='Video' ORDER BY MediaUploadedTime DESC"
 
 const query_makeThumbnail_UploadtoS3_Delete = async () => {
   if (videoFiles.length === 0) {
     const mediaForThumbnail = await excuteQuery({
       query:
-        "SELECT * FROM  media where  (ThumbnailBig is  NULL or ThumbnailBig='') and UploadStatus=1 and MediaType='Video'",
+        "SELECT * FROM  media " +whereClause,
     });
     mediaForThumbnail.forEach((element) => {
       videoFiles.push(element.FILENAMEASUPLOADED);
+    });
+
+    await excuteQuery({
+      query:
+        "update media Set ThumbnailBig='-1', ThumbnailSmall='-1'  " + whereClause,
     });
 
     for (const { MediaID, MediaExt } of mediaForThumbnail) {
