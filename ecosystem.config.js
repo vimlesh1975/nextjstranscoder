@@ -1,7 +1,7 @@
 module.exports = {
     apps: [{
-      name: "app1",
+      name: "nextjstranscoder",
       script: "node_modules/next/dist/bin/next",
-      args: "dev"
+      args: "dev",
     }]
   }
