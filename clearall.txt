@@ -1,1 +1,0 @@
-update media set ProxyReady=0, FilenameProxy1=null, ThumbnailBig=null, ThumbnailSmall=null, FileSize=null, Duration=null
