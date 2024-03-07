@@ -7,6 +7,7 @@ import { formatTime } from '../common';
 var cron = require('node-cron');
 const originallocation = process.env.originallocation1;
 const mediauploadedtimeinterval = parseInt(process.env.mediauploadedtimeinterval1);
+const whereClause=" where (Duration is  NULL or Duration='') and UploadStatus=1 and (MediaType='Video' or MediaType='image')  and (MediaUploadedTime > (NOW() - INTERVAL " + mediauploadedtimeinterval + " DAY))  ORDER BY MediaUploadedTime DESC";
 
 
 
@@ -19,8 +20,11 @@ async function getMetadata(MediaID, MediaExt) {
   const videoPath = await getObjectUrl(originallocation + file);
 
   return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(videoPath, (err, metadata) => {
+    ffmpeg.ffprobe(videoPath,async (err, metadata) => {
       if (err) {
+        await excuteQuery({
+          query: `update media Set Duration='-2', FileSize='-2' where MediaID='${MediaID}'`,
+        });
         reject(err);
       } else {
         resolve(metadata);
@@ -29,7 +33,6 @@ async function getMetadata(MediaID, MediaExt) {
   });
 }
 
-const whereClause=" where (Duration is  NULL or Duration='') and UploadStatus=1 and (MediaType='Video' or MediaType='image')  and (MediaUploadedTime > (NOW() - INTERVAL " + mediauploadedtimeinterval + " DAY))  ORDER BY MediaUploadedTime DESC";
 
 const query_getMetadata = async () => {
   if (videoFiles.length === 0) {

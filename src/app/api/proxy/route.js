@@ -11,6 +11,7 @@ const ffmpegpath = process.env.ffmpegpath1;
 const proxy1location = process.env.proxy1location1;
 const originallocation = process.env.originallocation1;
 const mediauploadedtimeinterval = parseInt(process.env.mediauploadedtimeinterval1);
+const whereClause = " where  proxyready=0  and  UploadStatus=1 and MediaType='Video' and (MediaUploadedTime > (NOW() - INTERVAL " + mediauploadedtimeinterval + " DAY)) ORDER BY MediaUploadedTime DESC"
 
 
 
@@ -60,7 +61,7 @@ async function makeProxy(MediaID, MediaExt) {
       outputLogStream.write(data.toString());
     });
 
-    ffmpegCommand.on('close', (code) => {
+    ffmpegCommand.on('close', async (code) => {
       outputLogStream.end();
       if (code === 0) {
         console.log(
@@ -71,12 +72,14 @@ async function makeProxy(MediaID, MediaExt) {
         resolve();
       } else {
         console.error(`Transcoding ${file} failed with exit code ${code}`);
+        await excuteQuery({
+          query: `update media Set FilenameProxy1='-2', proxyready=-2 where MediaID='${MediaID}'`,
+        });
         reject(new Error(`Transcoding ${file} failed with exit code ${code}`));
       }
     });
   });
 }
-const whereClause = " where  proxyready=0  and  UploadStatus=1 and MediaType='Video' and (MediaUploadedTime > (NOW() - INTERVAL " + mediauploadedtimeinterval + " DAY)) ORDER BY MediaUploadedTime DESC"
 const query_MakeProxy_UploadtoS3_Delete = async () => {
   if (videoFiles.length === 0) {
     const mediaForProxy = await excuteQuery({

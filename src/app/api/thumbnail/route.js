@@ -8,6 +8,7 @@ var cron = require('node-cron');
 const thumbnail1location = process.env.thumbnail1location1;
 const thumbnail2location = process.env.thumbnail2location1;
 const mediauploadedtimeinterval = parseInt(process.env.mediauploadedtimeinterval1);
+const whereClause=" where  (ThumbnailBig is  NULL or ThumbnailBig='') and UploadStatus=1 and MediaType='Video'  and (MediaUploadedTime > (NOW() - INTERVAL " + mediauploadedtimeinterval + " DAY))  ORDER BY MediaUploadedTime DESC"
 
 
 const logpath = process.env.logpath1;
@@ -45,7 +46,7 @@ async function makeThumbnail(MediaID, MediaExt) {
       outputLogStream.write(data.toString());
     });
 
-    ffmpegCommand.on('close', (code) => {
+    ffmpegCommand.on('close', async(code) => {
       outputLogStream.end();
       if (code === 0) {
         console.log(
@@ -57,6 +58,9 @@ async function makeThumbnail(MediaID, MediaExt) {
         resolve();
       } else {
         console.error(`Transcoding ${file} failed with exit code ${code}`);
+        await excuteQuery({
+          query: `update media Set ThumbnailBig='-2', ThumbnailSmall='-2' where MediaID='${MediaID}'`,
+        });
         reject(new Error(`Transcoding ${file} failed with exit code ${code}`));
       }
     });
@@ -106,7 +110,6 @@ async function makeThumbnail2(MediaID, MediaExt) {
     });
   });
 }
-const whereClause=" where  (ThumbnailBig is  NULL or ThumbnailBig='') and UploadStatus=1 and MediaType='Video'  and (MediaUploadedTime > (NOW() - INTERVAL " + mediauploadedtimeinterval + " DAY))  ORDER BY MediaUploadedTime DESC"
 
 const query_makeThumbnail_UploadtoS3_Delete = async () => {
   if (videoFiles.length === 0) {
