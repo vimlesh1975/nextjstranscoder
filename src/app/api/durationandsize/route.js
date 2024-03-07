@@ -6,6 +6,10 @@ import ffmpeg from 'fluent-ffmpeg';
 import { formatTime } from '../common';
 var cron = require('node-cron');
 const originallocation = process.env.originallocation1;
+const mediauploadedtimeinterval = parseInt(process.env.mediauploadedtimeinterval1);
+
+
+
 ffmpeg.setFfmpegPath(process.env.ffprobepath1);
 
 var videoFiles = [];
@@ -25,7 +29,7 @@ async function getMetadata(MediaID, MediaExt) {
   });
 }
 
-const whereClause=" where (Duration is  NULL or Duration='') and UploadStatus=1 and (MediaType='Video' or MediaType='image') ORDER BY MediaUploadedTime DESC";
+const whereClause=" where (Duration is  NULL or Duration='') and UploadStatus=1 and (MediaType='Video' or MediaType='image')  and (MediaUploadedTime > (NOW() - INTERVAL " + mediauploadedtimeinterval + " DAY))  ORDER BY MediaUploadedTime DESC";
 
 const query_getMetadata = async () => {
   if (videoFiles.length === 0) {

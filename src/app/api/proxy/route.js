@@ -10,14 +10,16 @@ const ffmpegpath = process.env.ffmpegpath1;
 
 const proxy1location = process.env.proxy1location1;
 const originallocation = process.env.originallocation1;
+const mediauploadedtimeinterval = parseInt(process.env.mediauploadedtimeinterval1);
+
+
 
 var videoFiles = [];
 
 async function makeProxy(MediaID, MediaExt) {
   const file = MediaID + MediaExt;
   console.log(
-    `Starting proxy1 of ${file} at ${
-      new Date().getMinutes() + ':' + new Date().getSeconds()
+    `Starting proxy1 of ${file} at ${new Date().getMinutes() + ':' + new Date().getSeconds()
     }`
   );
   const outputLogStream = fs.createWriteStream(
@@ -62,8 +64,7 @@ async function makeProxy(MediaID, MediaExt) {
       outputLogStream.end();
       if (code === 0) {
         console.log(
-          `completed proxy1 of ${file} at ${
-            new Date().getMinutes() + ':' + new Date().getSeconds()
+          `completed proxy1 of ${file} at ${new Date().getMinutes() + ':' + new Date().getSeconds()
           }`
         );
         console.log(`----------------------------`);
@@ -75,8 +76,7 @@ async function makeProxy(MediaID, MediaExt) {
     });
   });
 }
-const whereClause=" where  proxyready=0  and  UploadStatus=1 and MediaType='Video' ORDER BY MediaUploadedTime DESC"
-
+const whereClause = " where  proxyready=0  and  UploadStatus=1 and MediaType='Video' and (MediaUploadedTime > (NOW() - INTERVAL " + mediauploadedtimeinterval + " DAY)) ORDER BY MediaUploadedTime DESC"
 const query_MakeProxy_UploadtoS3_Delete = async () => {
   if (videoFiles.length === 0) {
     const mediaForProxy = await excuteQuery({
@@ -117,7 +117,7 @@ const query_MakeProxy_UploadtoS3_Delete = async () => {
 };
 
 var started = false;
-var dd ;
+var dd;
 const log1 = () => {
   console.log('log from proxy ')
 }
@@ -126,17 +126,17 @@ export async function POST(req, res) {
   const jsonData = await req.json();
   if (jsonData.start === true && started === false) {
     query_MakeProxy_UploadtoS3_Delete();
-     dd = cron.schedule('* * * * *', () =>
-    query_MakeProxy_UploadtoS3_Delete()
-  );
-  
-  //  dd = cron.schedule('*/5 * * * * *', () => log1());
-  //   log1();
-  started = true;
+    dd = cron.schedule('* * * * *', () =>
+      query_MakeProxy_UploadtoS3_Delete()
+    );
+
+    //  dd = cron.schedule('*/5 * * * * *', () => log1());
+    //   log1();
+    started = true;
   }
   if (jsonData.start === false && started === true) {
-  started = false;
-  dd.stop();
+    started = false;
+    dd.stop();
 
   }
   const response = new Response(JSON.stringify({ started: started }));
