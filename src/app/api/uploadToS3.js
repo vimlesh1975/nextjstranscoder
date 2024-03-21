@@ -7,14 +7,30 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 import fs from 'fs';
 
-const bucket1 = process.env.bucket1;
+import readCredentials from './readCredentials'
 
-const s3Client = new S3Client({
-  region: process.env.region1,
+const configfromenvfile={
   credentials: {
     accessKeyId: process.env.accessKeyId1,
     secretAccessKey: process.env.secretAccessKey1,
   },
+}
+const configfromereadingFile=await readCredentials();
+
+
+const bucket1 = process.env.bucket1;
+
+// const s3Client = new S3Client({
+//   region: process.env.region1,
+//   credentials: {
+//     accessKeyId: process.env.accessKeyId1,
+//     secretAccessKey: process.env.secretAccessKey1,
+//   },
+// });
+
+const  s3Client = new S3Client({
+  region: process.env.region1,
+  credentials:(process.env.credentialsfromenv === 1)?configfromenvfile.credentials:configfromereadingFile.credentials
 });
 
 export const getObjectUrl = async (key) => {

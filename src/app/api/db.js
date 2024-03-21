@@ -1,7 +1,7 @@
 import mysql from 'serverless-mysql';
-import getmysqlConfig from './readCredentials'
+import readCredentials from './readCredentials'
 
-const configfromenvfile={
+const configfromenvfile = {
   config: {
     host: process.env.host1,
     port: process.env.port1,
@@ -10,11 +10,8 @@ const configfromenvfile={
     password: process.env.password1,
   },
 }
-const configfromereadingFile=await getmysqlConfig();
-
-// const db = mysql(configfromenvfile);
-const db = mysql(configfromereadingFile);
-
+const configfromereadingFile = await readCredentials();
+const db=(process.env.credentialsfromenv === 1)?mysql(configfromenvfile):mysql(configfromereadingFile.mysqlConfig);
 const excuteQuery = async ({ query, values }) => {
   try {
     const results = await db.query(query, values);
@@ -24,5 +21,4 @@ const excuteQuery = async ({ query, values }) => {
     return { error };
   }
 };
-
 export default excuteQuery;
