@@ -40,13 +40,15 @@ const Gallery = () => {
         {(media?.urls ?? []).map((element, i) => (
           <div key={i} style={{ border: '2px solid red' }}>
             <div>{media.media[i].MediaID}</div>
+            <div>{media.media[i].MediaUploadedTime}</div>
             {(media.media[i].MediaType).toUpperCase() === 'VIDEO' ? (
               <video src={media.videoUrls[i]} width={width} height={height} controls />
             ) : (
               <Image priority={false} src={element} alt='' width={width} height={height} style={{ border: '2px solid black' }} />
             )}
             <div>
-              size: {(media.media[i].FileSize / 1000000).toFixed(1)}MB Duration: {media.media[i].Duration}
+              size: {(media.media[i].FileSize / 1000000).toFixed(1)}MB 
+               {((media.media[i].MediaType).toUpperCase() == 'VIDEO') && ` Duration: ${media.media[i].Duration}`}
             </div>
           </div>
         ))}
