@@ -10,6 +10,16 @@ module.exports = {
         hostname: 'vimleshs3001.s3.ap-south-1.amazonaws.com',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'ndmsmedia.s3.ap-south-1.amazonaws.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pbwire.s3.ap-south-1.amazonaws.com',
+        pathname: '**',
+      },
     ],
   },
   webpack: (config, { isServer }) => {
