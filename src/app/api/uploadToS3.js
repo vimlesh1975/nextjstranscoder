@@ -30,7 +30,7 @@ const bucket1 = process.env.bucket1;
 
 const  s3Client = new S3Client({
   region: process.env.region1,
-  credentials:(process.env.credentialsfromenv === 1)?configfromenvfile.credentials:configfromereadingFile.credentials
+  credentials:(process.env.credentialsfromenv === '1')?configfromenvfile.credentials:configfromereadingFile.credentials
 });
 
 export const getObjectUrl = async (key) => {

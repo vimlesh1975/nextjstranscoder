@@ -11,7 +11,18 @@ const configfromenvfile = {
   },
 }
 const configfromereadingFile = await readCredentials();
-const db=(process.env.credentialsfromenv === 1)?mysql(configfromenvfile):mysql(configfromereadingFile.mysqlConfig);
+const db=(process.env.credentialsfromenv === '1')?mysql(configfromenvfile):mysql(configfromereadingFile.mysqlConfig);
+
+// Attempt to connect to the database when this module is imported
+(async () => {
+  try {
+    await db.query('SELECT 1');
+    console.log('Connection to database successful!');
+  } catch (error) {
+    console.error('Error connecting to database:', error);
+  }
+})();
+
 const excuteQuery = async ({ query, values }) => {
   try {
     const results = await db.query(query, values);
