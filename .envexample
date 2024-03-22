@@ -17,6 +17,5 @@
     thumbnail1location1=Media/TH1/
     thumbnail2location1=Media/TH2/
 
-    mediauploadedtimeinterval1=10000
     credentialsfromenv=1
-
+    andquery=" and (MediaUploadedTime > (NOW() - INTERVAL 10000 DAY)) ORDER BY MediaUploadedTime DESC"
