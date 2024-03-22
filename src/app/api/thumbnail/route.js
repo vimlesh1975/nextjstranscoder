@@ -7,8 +7,8 @@ import { deleteAFile } from '../common';
 var cron = require('node-cron');
 const thumbnail1location = process.env.thumbnail1location1;
 const thumbnail2location = process.env.thumbnail2location1;
-const mediauploadedtimeinterval = parseInt(process.env.mediauploadedtimeinterval1);
-const whereClause=" where  (ThumbnailBig is  NULL or ThumbnailBig='') and  MediaType='Video'  and (MediaUploadedTime > (NOW() - INTERVAL " + mediauploadedtimeinterval + " DAY))  ORDER BY MediaUploadedTime DESC"
+const andquery=process.env.andquery;
+const whereClause=" where  (ThumbnailBig is  NULL or ThumbnailBig='') and  MediaType='Video'  " + andquery
 
 
 const logpath = process.env.logpath1;

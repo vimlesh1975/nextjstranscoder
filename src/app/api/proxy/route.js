@@ -10,10 +10,8 @@ const ffmpegpath = process.env.ffmpegpath1;
 
 const proxy1location = process.env.proxy1location1;
 const originallocation = process.env.originallocation1;
-const mediauploadedtimeinterval = parseInt(process.env.mediauploadedtimeinterval1);
-const whereClause = " where  proxyready=0  and  MediaType='Video' and (MediaUploadedTime > (NOW() - INTERVAL " + mediauploadedtimeinterval + " DAY)) ORDER BY MediaUploadedTime DESC"
-
-
+const andquery=process.env.andquery;
+const whereClause = " where  proxyready=0  and  MediaType='Video' " + andquery
 
 var videoFiles = [];
 
