@@ -18,4 +18,11 @@
     thumbnail2location1=Media/TH2/
 
     credentialsfromenv=1
-    andquery=" and (MediaUploadedTime > (NOW() - INTERVAL 10000 DAY)) ORDER BY MediaUploadedTime DESC"
+    #NEXT_PUBLIC_TIMEFIELD=MediaUploadedTime
+    #andquery=" and (MediaUploadedTime > (NOW() - INTERVAL 10000 DAY)) ORDER BY MediaUploadedTime DESC limit 10"
+    #orderbyforgallery=" ORDER BY MediaUploadedTime DESC limit 10"
+
+    NEXT_PUBLIC_TIMEFIELD=created_at
+    andquery=" and (created_at > (NOW() - INTERVAL 10000 DAY)) ORDER BY created_at DESC limit 10"
+    orderbyforgallery=" ORDER BY created_at DESC limit 10"
+

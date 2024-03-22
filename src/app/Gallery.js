@@ -1,8 +1,13 @@
+'use client'
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 const width = 300;
 const height = 200;
+
+const timefield= process.env.NEXT_PUBLIC_TIMEFIELD ;
+// const timefield= 'created_at' ;
+console.log(timefield)
 
 function getTimeDifference(mediaUploadedTime) {
   const timestamp = new Date(mediaUploadedTime);
@@ -56,7 +61,7 @@ const Gallery = () => {
         {(media?.urls ?? []).map((element, i) => (
           <div key={i} style={{ border: '2px solid red' }}>
             <div>{media.media[i].MediaID}</div>
-            <div>{getTimeDifference(media.media[i].MediaUploadedTime)}</div>
+            <div>{getTimeDifference(media.media[i][timefield])}</div>
             {(media.media[i].MediaType).toUpperCase() === 'VIDEO' ? (
               <video src={media.videoUrls[i]} width={width} height={height} controls />
             ) : (
