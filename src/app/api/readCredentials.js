@@ -1,5 +1,5 @@
 const fs = require('fs').promises; // Use the promises version of fs for better readability
-const phpFilePath = 'c:/inetpub/wwwroot/pbnscred.php';
+const phpFilePath = './pbnscred.php';
 
 const readCredentials = async () => {
     try {
