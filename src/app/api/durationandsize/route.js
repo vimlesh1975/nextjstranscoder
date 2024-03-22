@@ -7,7 +7,7 @@ import { formatTime } from '../common';
 var cron = require('node-cron');
 const originallocation = process.env.originallocation1;
 const mediauploadedtimeinterval = parseInt(process.env.mediauploadedtimeinterval1);
-const whereClause=" where (Duration is  NULL or Duration='') and UploadStatus=1 and (MediaType='Video' or MediaType='image')  and (MediaUploadedTime > (NOW() - INTERVAL " + mediauploadedtimeinterval + " DAY))  ORDER BY MediaUploadedTime DESC";
+const whereClause=" where (Duration is  NULL or Duration='') and  (MediaType='Video' or MediaType='image')  and (MediaUploadedTime > (NOW() - INTERVAL " + mediauploadedtimeinterval + " DAY))  ORDER BY MediaUploadedTime DESC";
 
 
 
