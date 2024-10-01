@@ -68,6 +68,9 @@ const Gallery = () => {
               <Image priority={false} src={element} alt='' width={width} height={height} style={{ border: '2px solid black' }} />
             )}
             <div>
+              <div> 
+              {media.media[i].FILENAMEASUPLOADED}
+              </div>
               size: {(media.media[i].FileSize / 1000000).toFixed(1)}MB 
                {((media.media[i].MediaType).toUpperCase() == 'VIDEO') && ` Duration: ${media.media[i].Duration}`}
             </div>
