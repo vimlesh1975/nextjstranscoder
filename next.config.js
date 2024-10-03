@@ -17,9 +17,21 @@ module.exports = {
       },
       {
         protocol: 'https',
+        hostname: 's3.ap-south-1.amazonaws.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
         hostname: 'pbwire.s3.ap-south-1.amazonaws.com',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'oss-gw.cyfuture.cloud',
+        pathname: '**',
+      },
+
+
     ],
   },
   webpack: (config, { isServer }) => {
