@@ -1,28 +1,39 @@
     host1=localhost
     port1=3306
-    database1=fgdfgdfg
-    user1=fgdfgdfg
-    password1=fgdfg
+    database1=ndmsnew
+    user1=root
+    password1=root
 
     logpath1=./log/
     ffmpegpath1=ffmpeg
     ffprobepath1=ffprobe
 
     region1=ap-south-1
-    accessKeyId1=fgfdgdfgdfg
-    secretAccessKey1=fdgdfgdfg
-    bucket1=fdgdfgdfg
+    accessKeyId1=fgfg
+    secretAccessKey1=fgfg
+    bucket1=ndmsmedia
+    endpoint1=https://s3.ap-south-1.amazonaws.com
+    forcepathstyle1=false
+
+    # region1=DefaultRegion
+    # accessKeyId1=gfgfg
+    # secretAccessKey1=fgfgfg
+    # bucket1=ndmsmedia
+    # endpoint1=https://oss-gw.cyfuture.cloud
+    # forcepathstyle1=true
+
     proxy1location1=Media/Proxy1/
     originallocation1=Media/original/
     thumbnail1location1=Media/TH1/
     thumbnail2location1=Media/TH2/
 
     credentialsfromenv=1
-    #NEXT_PUBLIC_TIMEFIELD=MediaUploadedTime
-    #andquery=" and (MediaUploadedTime > (NOW() - INTERVAL 10000 DAY)) ORDER BY MediaUploadedTime DESC limit 10"
-    #orderbyforgallery=" ORDER BY MediaUploadedTime DESC limit 10"
+    
+    NEXT_PUBLIC_TIMEFIELD=MediaUploadedTime
+    andquery=" and (MediaUploadedTime > (NOW() - INTERVAL 1 DAY)) ORDER BY MediaUploadedTime DESC"
+    orderbyforgallery=" ORDER BY MediaUploadedTime DESC limit 3"
 
-    NEXT_PUBLIC_TIMEFIELD=created_at
-    andquery=" and (created_at > (NOW() - INTERVAL 10000 DAY)) ORDER BY created_at DESC limit 10"
-    orderbyforgallery=" ORDER BY created_at DESC limit 10"
+    # NEXT_PUBLIC_TIMEFIELD=created_at
+    # andquery=" and (created_at > (NOW() - INTERVAL 1 DAY)) ORDER BY created_at DESC"
+    # orderbyforgallery=" ORDER BY created_at DESC limit 3"
 
